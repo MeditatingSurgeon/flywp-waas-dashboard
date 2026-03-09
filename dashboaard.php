@@ -7,6 +7,11 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
+if ( ! class_exists( 'FlyWP_API' ) ) {
+    echo '<div class="wrap"><div class="error"><p>' . esc_html__( 'API class is missing.', 'flywp-waas' ) . '</p></div></div>';
+    return;
+}
+
 $api = new FlyWP_API();
 $sites_response = $api->get_sites();
 $sites = is_wp_error( $sites_response ) ? [] : (isset($sites_response['data']) ? $sites_response['data'] : []);
@@ -71,7 +76,7 @@ $blueprints = is_wp_error( $blueprints_response ) ? [] : (isset($blueprints_resp
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    <?php if ( empty( $sites ) ) : ?>
+                    <?php if ( empty( $sites ) || ! is_array( $sites ) ) : ?>
                         <tr>
                             <td colspan="4" class="px-6 py-12 text-center text-gray-500">
                                 <?php esc_html_e( 'No sites found. Create your first site to get started.', 'flywp-waas' ); ?>
@@ -127,7 +132,7 @@ $blueprints = is_wp_error( $blueprints_response ) ? [] : (isset($blueprints_resp
                                         <label for="blueprint_id" class="block text-sm font-medium text-gray-700"><?php esc_html_e( 'Blueprint', 'flywp-waas' ); ?></label>
                                         <select id="blueprint_id" name="blueprint_id" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
                                             <option value=""><?php esc_html_e( 'Select a blueprint...', 'flywp-waas' ); ?></option>
-                                            <?php if ( ! empty( $blueprints ) ) : ?>
+                                            <?php if ( ! empty( $blueprints ) && is_array( $blueprints ) ) : ?>
                                                 <?php foreach ( $blueprints as $bp ) : ?>
                                                     <option value="<?php echo esc_attr( $bp['id'] ); ?>"><?php echo esc_html( $bp['name'] ); ?></option>
                                                 <?php endforeach; ?>
